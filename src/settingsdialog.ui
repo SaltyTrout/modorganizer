@@ -23,7 +23,7 @@
       <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0">
+      <layout class="QGridLayout" name="gridLayout" rowstretch="0">
        <item row="0" column="0">
         <widget class="QScrollArea" name="generalScrollArea">
          <property name="styleSheet">
@@ -44,8 +44,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>780</width>
-            <height>502</height>
+            <width>778</width>
+            <height>497</height>
            </rect>
           </property>
           <property name="autoFillBackground">
@@ -1022,8 +1022,8 @@ If you disable this feature, MO will only display official DLCs this way. Please
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>780</width>
-            <height>502</height>
+            <width>778</width>
+            <height>497</height>
            </rect>
           </property>
           <property name="autoFillBackground">
@@ -1436,9 +1436,9 @@ If you disable this feature, MO will only display official DLCs this way. Please
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="pluginsTab">
+     <widget class="QWidget" name="extensionsTab">
       <attribute name="title">
-       <string>Plugins</string>
+       <string>Extensions</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
@@ -1492,13 +1492,7 @@ If you disable this feature, MO will only display official DLCs this way. Please
                 <number>0</number>
                </property>
                <item>
-                <widget class="QTreeWidget" name="pluginsList">
-                 <column>
-                  <property name="text">
-                   <string notr="true">1</string>
-                  </property>
-                 </column>
-                </widget>
+                <widget class="QListWidget" name="extensionsList"/>
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -1702,8 +1696,8 @@ If you disable this feature, MO will only display official DLCs this way. Please
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>780</width>
-            <height>483</height>
+            <width>778</width>
+            <height>475</height>
            </rect>
           </property>
           <property name="autoFillBackground">
