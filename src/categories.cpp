@@ -34,21 +34,21 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace MOBase;
 
+CategoryFactory* CategoryFactory::s_Instance = nullptr;
+
 QString CategoryFactory::categoriesFilePath()
 {
   return qApp->property("dataPath").toString() + "/categories.dat";
 }
 
-CategoryFactory::CategoryFactory()
+CategoryFactory::CategoryFactory() : QObject()
+{
+  atexit(&cleanup);
+}
 
 QString CategoryFactory::nexusMappingFilePath()
 {
   return qApp->property("dataPath").toString() + "/nexuscatmap.dat";
-}
-
-CategoryFactory::CategoryFactory() : QObject()
-{
-  atexit(&cleanup);
 }
 
 void CategoryFactory::loadCategories()
@@ -143,7 +143,6 @@ void CategoryFactory::loadCategories()
   if (needLoad) loadDefaultCategories();
 }
 
-
 CategoryFactory* CategoryFactory::instance()
 {
   static CategoryFactory s_Instance;
@@ -181,6 +180,11 @@ void CategoryFactory::setParents()
   }
 }
 
+void CategoryFactory::cleanup()
+{
+  delete s_Instance;
+  s_Instance = nullptr;
+}
 
 void CategoryFactory::saveCategories()
 {
