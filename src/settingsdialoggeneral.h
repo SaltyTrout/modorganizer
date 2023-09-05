@@ -1,8 +1,8 @@
 #ifndef SETTINGSDIALOGGENERAL_H
 #define SETTINGSDIALOGGENERAL_H
 
-#include "settingsdialog.h"
 #include "settings.h"
+#include "settingsdialog.h"
 #include "plugincontainer.h"
 
 class GeneralSettingsTab : public SettingsTab
@@ -26,4 +26,4 @@ private:
 
 };
 
-#endif // SETTINGSDIALOGGENERAL_H
+#endif  // SETTINGSDIALOGGENERAL_H

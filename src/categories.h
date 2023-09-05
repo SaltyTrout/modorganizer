@@ -20,17 +20,16 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CATEGORIES_H
 #define CATEGORIES_H
 
-
 #include <QString>
-#include <vector>
-#include <map>
 #include <functional>
-
+#include <map>
+#include <vector>
 
 /**
  * @brief Manage the available mod categories
- * @warning member functions of this class currently use a wild mix of ids and indexes to look up categories,
- *          optimized to where the request comes from. Therefore be very careful which of the two you have available
+ * @warning member functions of this class currently use a wild mix of ids and indexes
+ *to look up categories, optimized to where the request comes from. Therefore be very
+ *careful which of the two you have available
  **/
 class CategoryFactory : public QObject {
   Q_OBJECT;
@@ -75,7 +74,8 @@ public:
   };
 
   struct Category {
-    Category(int sortValue, int id, const QString &name, int parentID, std::vector<NexusCategory> nexusCats)
+    Category(int sortValue, int id, const QString& name,
+             int parentID, std::vector<NexusCategory> nexusCats)
       : m_SortValue(sortValue), m_ID(id), m_Name(name), m_HasChildren(false), m_ParentID(parentID)
       , m_NexusCats(nexusCats) {}
     int m_SortValue;
@@ -85,13 +85,13 @@ public:
     QString m_Name;
     std::vector<NexusCategory> m_NexusCats;
 
-    friend bool operator<(const Category &LHS, const Category &RHS) {
+    friend bool operator<(const Category& LHS, const Category& RHS)
+    {
       return LHS.m_SortValue < RHS.m_SortValue;
     }
   };
 
 public:
-
   /**
    * @brief reset the list of categories
    **/
@@ -109,21 +109,21 @@ public:
 
   void setNexusCategories(std::vector<CategoryFactory::NexusCategory>& nexusCats);
 
-  int addCategory(const QString &name, const std::vector<NexusCategory> &nexusCats, int parentID);
+  int addCategory(const QString& name, const std::vector<NexusCategory>& nexusCats, int parentID);
 
   /**
    * @brief retrieve the number of available categories
    *
    * @return unsigned int number of categories
    **/
-   size_t numCategories() const { return m_Categories.size(); }
+  size_t numCategories() const { return m_Categories.size(); }
 
   /**
    * @brief count all categories that match a specified filter
    * @param filter the filter to test
    * @return number of matching categories
    */
-  unsigned int countCategories(std::function<bool (const Category &category)> filter);
+  unsigned int countCategories(std::function<bool(const Category& category)> filter);
 
   /**
    * @brief get the id of the parent category
@@ -179,7 +179,7 @@ public:
    * @brief look up the id of a category by its name
    * @note O(n)
    */
-  int getCategoryID(const QString &name) const;
+  int getCategoryID(const QString& name) const;
 
   /**
    * @brief look up the index of a category by its id
@@ -198,13 +198,12 @@ public:
   unsigned int resolveNexusID(int nexusID) const;
 
 public:
-
   /**
    * @brief retrieve a reference to the singleton instance
    *
    * @return the reference to the singleton
    **/
-  static CategoryFactory *instance();
+  static CategoryFactory* instance();
 
   /**
    * @return path to the file that contains the categories list
@@ -221,7 +220,8 @@ private:
 
   void loadDefaultCategories();
 
-  void addCategory(int id, const QString &name, const std::vector<NexusCategory> &nexusCats, int parentID);
+  void addCategory(int id, const QString& name, const std::vector<NexusCategory>& nexusCats,
+                   int parentID);
   void addCategory(int id, const QString& name, int parentID);
 
   void setParents();
@@ -236,5 +236,4 @@ private:
   bool isDescendantOfImpl(int id, int parentID, std::set<int>& seen) const;
 };
 
-
-#endif // CATEGORIES_H
+#endif  // CATEGORIES_H

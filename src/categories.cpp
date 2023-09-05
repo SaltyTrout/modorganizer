@@ -19,35 +19,36 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "categories.h"
 
-#include <utility.h>
-#include <report.h>
 #include <log.h>
+#include <report.h>
+#include <utility.h>
 
-#include <QObject>
-#include <QFile>
+#include <QCoreApplication>
 #include <QDir>
+#include <QFile>
 #include <QList>
+#include <QObject>
 #include <QCoreApplication>
 
 #include "nexusinterface.h"
 
 using namespace MOBase;
 
-
 QString CategoryFactory::categoriesFilePath()
 {
   return qApp->property("dataPath").toString() + "/categories.dat";
 }
 
+CategoryFactory::CategoryFactory()
 
 QString CategoryFactory::nexusMappingFilePath()
 {
   return qApp->property("dataPath").toString() + "/nexuscatmap.dat";
 }
 
-
 CategoryFactory::CategoryFactory() : QObject()
 {
+  atexit(&cleanup);
 }
 
 void CategoryFactory::loadCategories()
@@ -71,7 +72,7 @@ void CategoryFactory::loadCategories()
           QList<QByteArray> nexusIDStrings = cells[2].split(',');
           for (QList<QByteArray>::iterator iter = nexusIDStrings.begin();
                iter != nexusIDStrings.end(); ++iter) {
-            bool ok = false;
+            bool ok  = false;
             int temp = iter->toInt(&ok);
             if (!ok) {
               log::error(tr("invalid category id {}").toStdString(), iter->constData());
@@ -81,7 +82,7 @@ void CategoryFactory::loadCategories()
         }
         bool cell0Ok = true;
         bool cell3Ok = true;
-        int id = cells[0].toInt(&cell0Ok);
+        int id       = cells[0].toInt(&cell0Ok);
         int parentID = cells[3].trimmed().toInt(&cell3Ok);
         if (!cell0Ok || !cell3Ok) {
           log::error(tr("invalid category line {}: {}").toStdString(), lineNum, line.constData());
@@ -143,12 +144,11 @@ void CategoryFactory::loadCategories()
 }
 
 
-CategoryFactory *CategoryFactory::instance()
+CategoryFactory* CategoryFactory::instance()
 {
   static CategoryFactory s_Instance;
   return &s_Instance;
 }
-
 
 void CategoryFactory::reset()
 {
@@ -162,7 +162,6 @@ void CategoryFactory::reset()
   addCategory(0, "None", std::vector<NexusCategory>(), 0);
 }
 
-
 void CategoryFactory::setParents()
 {
   for (std::vector<Category>::iterator iter = m_Categories.begin();
@@ -173,7 +172,8 @@ void CategoryFactory::setParents()
   for (std::vector<Category>::const_iterator categoryIter = m_Categories.begin();
        categoryIter != m_Categories.end(); ++categoryIter) {
     if (categoryIter->m_ParentID != 0) {
-      std::map<int, unsigned int>::const_iterator iter = m_IDMap.find(categoryIter->m_ParentID);
+      std::map<int, unsigned int>::const_iterator iter =
+          m_IDMap.find(categoryIter->m_ParentID);
       if (iter != m_IDMap.end()) {
         m_Categories[iter->second].m_HasChildren = true;
       }
@@ -198,9 +198,12 @@ void CategoryFactory::saveCategories()
       continue;
     }
     QByteArray line;
-    line.append(QByteArray::number(iter->m_ID)).append("|")
-        .append(iter->m_Name.toUtf8()).append("|")
-        .append(QByteArray::number(iter->m_ParentID)).append("\n");
+    line.append(QByteArray::number(iter->m_ID))
+        .append("|")
+        .append(iter->m_Name.toUtf8())
+        .append("|")
+        .append(QByteArray::number(iter->m_ParentID))
+        .append("\n");
     categoryFile.write(line);
   }
   categoryFile.close();
@@ -223,11 +226,11 @@ void CategoryFactory::saveCategories()
   nexusMapFile.close();
 }
 
-
-unsigned int CategoryFactory::countCategories(std::function<bool (const Category &category)> filter)
+unsigned int
+CategoryFactory::countCategories(std::function<bool(const Category& category)> filter)
 {
   unsigned int result = 0;
-  for (const Category &cat : m_Categories) {
+  for (const Category& cat : m_Categories) {
     if (filter(cat)) {
       ++result;
     }
@@ -235,7 +238,8 @@ unsigned int CategoryFactory::countCategories(std::function<bool (const Category
   return result;
 }
 
-int CategoryFactory::addCategory(const QString &name, const std::vector<NexusCategory>& nexusCats, int parentID)
+int CategoryFactory::addCategory(const QString& name, const std::vector<NexusCategory>& nexusCats,
+                                 int parentID)
 {
   int id = 1;
   while (m_IDMap.find(id) != m_IDMap.end()) {
@@ -247,7 +251,8 @@ int CategoryFactory::addCategory(const QString &name, const std::vector<NexusCat
   return id;
 }
 
-void CategoryFactory::addCategory(int id, const QString &name, int parentID)
+void CategoryFactory::addCategory(int id, const QString& name,
+                                  int parentID)
 {
   int index = static_cast<int>(m_Categories.size());
   m_Categories.push_back(Category(index, id, name, parentID, std::vector<NexusCategory>()));
@@ -339,7 +344,6 @@ void CategoryFactory::loadDefaultCategories()
   addCategory(47, "Miscellaneous", 0);
 }
 
-
 int CategoryFactory::getParentID(unsigned int index) const
 {
   if (index >= m_Categories.size()) {
@@ -349,12 +353,10 @@ int CategoryFactory::getParentID(unsigned int index) const
   return m_Categories[index].m_ParentID;
 }
 
-
 bool CategoryFactory::categoryExists(int id) const
 {
   return m_IDMap.find(id) != m_IDMap.end();
 }
-
 
 bool CategoryFactory::isDescendantOf(int id, int parentID) const
 {
@@ -363,8 +365,8 @@ bool CategoryFactory::isDescendantOf(int id, int parentID) const
   return isDescendantOfImpl(id, parentID, seen);
 }
 
-bool CategoryFactory::isDescendantOfImpl(
-  int id, int parentID, std::set<int>& seen) const
+bool CategoryFactory::isDescendantOfImpl(int id, int parentID,
+                                         std::set<int>& seen) const
 {
   if (!seen.insert(id).second) {
     log::error("cycle in category: {}", id);
@@ -388,7 +390,6 @@ bool CategoryFactory::isDescendantOfImpl(
   }
 }
 
-
 bool CategoryFactory::hasChildren(unsigned int index) const
 {
   if (index >= m_Categories.size()) {
@@ -397,7 +398,6 @@ bool CategoryFactory::hasChildren(unsigned int index) const
 
   return m_Categories[index].m_HasChildren;
 }
-
 
 QString CategoryFactory::getCategoryName(unsigned int index) const
 {
@@ -411,20 +411,42 @@ QString CategoryFactory::getCategoryName(unsigned int index) const
 QString CategoryFactory::getSpecialCategoryName(SpecialCategories type) const
 {
   QString label;
-  switch (type)
-  {
-    case Checked:         label = QObject::tr("Active"); break;
-    case UpdateAvailable: label = QObject::tr("Update available"); break;
-    case HasCategory:     label = QObject::tr("Has category"); break;
-    case Conflict:        label = QObject::tr("Conflicted"); break;
-    case HasHiddenFiles:  label = QObject::tr("Has hidden files"); break;
-    case Endorsed:        label = QObject::tr("Endorsed"); break;
-    case Backup:          label = QObject::tr("Has backup"); break;
-    case Managed:         label = QObject::tr("Managed"); break;
-    case HasGameData:     label = QObject::tr("Has valid game data"); break;
-    case HasNexusID:      label = QObject::tr("Has Nexus ID"); break;
-    case Tracked:         label = QObject::tr("Tracked on Nexus"); break;
-    default: return {};
+  switch (type) {
+  case Checked:
+    label = QObject::tr("Active");
+    break;
+  case UpdateAvailable:
+    label = QObject::tr("Update available");
+    break;
+  case HasCategory:
+    label = QObject::tr("Has category");
+    break;
+  case Conflict:
+    label = QObject::tr("Conflicted");
+    break;
+  case HasHiddenFiles:
+    label = QObject::tr("Has hidden files");
+    break;
+  case Endorsed:
+    label = QObject::tr("Endorsed");
+    break;
+  case Backup:
+    label = QObject::tr("Has backup");
+    break;
+  case Managed:
+    label = QObject::tr("Managed");
+    break;
+  case HasGameData:
+    label = QObject::tr("Has valid game data");
+    break;
+  case HasNexusID:
+    label = QObject::tr("Has Nexus ID");
+    break;
+  case Tracked:
+    label = QObject::tr("Tracked on Nexus");
+    break;
+  default:
+    return {};
   }
   return QString("<%1>").arg(label);
 }
@@ -454,7 +476,6 @@ int CategoryFactory::getCategoryID(unsigned int index) const
   return m_Categories[index].m_ID;
 }
 
-
 int CategoryFactory::getCategoryIndex(int ID) const
 {
   std::map<int, unsigned int>::const_iterator iter = m_IDMap.find(ID);
@@ -464,13 +485,12 @@ int CategoryFactory::getCategoryIndex(int ID) const
   return iter->second;
 }
 
-
-int CategoryFactory::getCategoryID(const QString &name) const
+int CategoryFactory::getCategoryID(const QString& name) const
 {
   auto iter = std::find_if(m_Categories.begin(), m_Categories.end(),
-                           [name] (const Category &cat) -> bool {
-    return cat.m_Name == name;
-  });
+                           [name](const Category& cat) -> bool {
+                             return cat.m_Name == name;
+                           });
 
   if (iter != m_Categories.end()) {
     return iter->m_ID;
@@ -478,7 +498,6 @@ int CategoryFactory::getCategoryID(const QString &name) const
     return -1;
   }
 }
-
 
 unsigned int CategoryFactory::resolveNexusID(int nexusID) const
 {

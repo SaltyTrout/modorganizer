@@ -25,7 +25,8 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 #include "plugincontainer.h"
 #include <set>
 
-namespace Ui {
+namespace Ui
+{
 class CategoriesDialog;
 }
 
@@ -37,8 +38,7 @@ class CategoriesDialog : public MOBase::TutorableDialog
   Q_OBJECT
 
 public:
-
-  explicit CategoriesDialog(PluginContainer *pluginContainer, QWidget *parent = 0);
+  explicit CategoriesDialog(PluginContainer* pluginContainer, QWidget* parent = 0);
   ~CategoriesDialog();
 
   // also saves and restores geometry
@@ -61,7 +61,7 @@ signals:
 
 private slots:
 
-  void on_categoriesTable_customContextMenuRequested(const QPoint &pos);
+  void on_categoriesTable_customContextMenuRequested(const QPoint& pos);
   void addCategory_clicked();
   void removeCategory_clicked();
   void nexusRefresh_clicked();
@@ -69,14 +69,12 @@ private slots:
   void cellChanged(int row, int column);
 
 private:
-
   void refreshIDs();
   void fillTable();
 
 private:
-
-  Ui::CategoriesDialog *ui;
-  PluginContainer *m_PluginContainer;
+  Ui::CategoriesDialog* ui;
+  PluginContainer* m_PluginContainer;
   int m_ContextRow;
 
   int m_HighestID;
@@ -85,5 +83,4 @@ private:
 
 };
 
-#endif // CATEGORIESDIALOG_H
-
+#endif  // CATEGORIESDIALOG_H
